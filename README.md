@@ -13,7 +13,7 @@
       docker compose exec mosquitto sh
       ```
    1. ```bash
-      mosquitto_passwd -c /mosquitto/config/pwfile <USERNAME>
+      mosquitto_passwd -c /mosquitto/config/pwfile mqtt
       ```
 1. Get the UID of the Node-RED container user (e.g. `id -u nodered`)
 1. Pre-create the nodered directory and set permissions
