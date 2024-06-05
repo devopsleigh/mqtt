@@ -9,7 +9,7 @@
    ```
 1. Start Mosquitto 
    ```bash
-   `docker compose mosquitto up -d
+   docker compose mosquitto up -d
    ```
 1. Enter the container and set the password
    ```bash
