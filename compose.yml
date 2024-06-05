@@ -1,0 +1,52 @@
+services:
+
+  nodered:
+    container_name: nodered
+    image: nodered/node-red
+    restart: unless-stopped
+#    ports:
+#      - 1880:1880
+    volumes:
+      - ./nodered:/data
+    depends_on:
+      - mosquitto
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      mqtt:
+      proxy:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${SERVICE_NAME}.entrypoints=http"
+      - "traefik.http.routers.${SERVICE_NAME}.rule=Host(`${SERVICE_NAME}.${MY_DOMAIN}`)"
+      - "traefik.http.routers.${SERVICE_NAME}.middlewares=default-whitelist@file"
+      - "traefik.http.middlewares.${SERVICE_NAME}-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.${SERVICE_NAME}.middlewares=${SERVICE_NAME}-https-redirect"
+      - "traefik.http.routers.${SERVICE_NAME}-secure.entrypoints=https"
+      - "traefik.http.routers.${SERVICE_NAME}-secure.rule=Host(`${SERVICE_NAME}.${MY_DOMAIN}`)"
+      - "traefik.http.routers.${SERVICE_NAME}-secure.tls=true"
+      - "traefik.http.routers.${SERVICE_NAME}-secure.service=${SERVICE_NAME}"
+      - "traefik.http.services.${SERVICE_NAME}.loadbalancer.server.port=${SERVICE_INTERNAL_PORT}"
+      - "traefik.docker.network=proxy"
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    restart: unless-stopped
+    ports:
+      - 1883:1883
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+      - /etc/localtime:/etc/localtime:ro
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      mqtt:
+
+networks:
+  proxy:
+    external: true
+  mqtt:
+    external: true
