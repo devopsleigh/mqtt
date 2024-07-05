@@ -44,6 +44,7 @@ services:
       - no-new-privileges:true
     networks:
       mqtt:
+      proxy:
 
 networks:
   proxy:
